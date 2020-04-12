@@ -1,0 +1,43 @@
+
+Cars Data - (Assignment 4 - Question 4)
+bookmark_border
+subject Machine Learning / AIcasino 10 points
+DESCRIPTION
+Consider an automobile data set with values such as Name of the car Model, its mileage, number of cylinders, number of gears and so on. 
+ 
+The data is present in the file named mtcars.csv which is present at the location /data/training/mtcars.csv
+ 
+Write a Python code to calculate the difference between the means 10-fold cross validation scores of ridge regression and lasso regression with alpha as 1.0
+                
+Hint: Perform steps as mentioned below:
+Load data
+Use all the columns except ‘mpg’ & ‘model’ as predictors (x)
+Use ‘mpg’ as the response column(y)
+Perform Lasso & Ridge regression on this data. Use all the rows as training data for performing regression.
+Perform cross validation on both the regression results for the above x & y with cv=10 and default scoring
+Calculate and print the difference by subtracting the mean score of ridge from the mean score of lasso regression
+
+
+
+import csv
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.model_selection import cross_val_score
+import matplotlib.pyplot as plt
+#from sklearn.linear_model import LogisticRegression
+car_data=pd.read_csv('/data/training/mtcars.csv')
+cars=car_data.drop(['mpg','model'],axis=1)
+x=cars
+y=car_data.mpg
+ridge=Ridge(alpha=1.0)
+lasso=Lasso(alpha=1.0)
+CV1=cross_val_score(lasso,x,y,cv=10)
+CV2=cross_val_score(ridge,x,y,cv=10)
+val1=round(np.mean(CV1),2)
+val2=round(np.mean(CV2),2)
+diff=val2-val1
+d=round(diff,2)
+with open("/code/output/output.csv",'w',newline='') as f:
+        writer=csv.writer(f,delimiter=",")
+        writer.writerow([str(d)])

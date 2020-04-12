@@ -1,0 +1,36 @@
+DESCRIPTION
+Question:
+
+Perform logistic regression on iris data set as follows:
+
+1. Load iris data set from sklearn.datasets
+Hint: To load the dataset, use:
+                from sklearn import datasets
+                iris = datasets.load_iris()
+                x = iris.data
+                y = iris.target
+To perform logistic regression, use function from sklean.linear_model with default value of parameters
+2. Perform cross validation on this model for the specified x & y values with cv as 5 and scoring as accuracy. 
+Hint: Use function cross_val_score
+This generates accuracy scores, one for each iteration of the 5 iterations performed
+Print the mean accuracy score rounded to 2 decimal places
+
+
+# Do not delete the stub code
+import numpy as np
+from sklearn import datasets
+from sklearn.linear_model import LogisticRegression
+from sklearn import svm
+from sklearn.model_selection import cross_val_score
+import csv
+iris = datasets.load_iris()
+x = iris.data
+y = iris.target
+logreg=LogisticRegression()
+logreg.fit(x,y)
+scores = cross_val_score(logreg, iris.data, iris.target, cv=5, scoring='accuracy')
+value=round(np.mean(scores),2)
+with open("/code/output/output.csv",'w',newline='') as f:
+        writer=csv.writer(f,delimiter=",")
+        writer.writerow([str(value)])
+# Write your code here

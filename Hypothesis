@@ -1,0 +1,100 @@
+DESCRIPTION
+The IQ data set containing 10000 data points is present at the location (/data/training/iqdata.csv)
+The data set contains only the IQ values of people who participated in the survey across the world in a single column without header.
+
+Here's a preview of the data under consideration:
+
+It contains IQ values with the below specifications:
+The average IQ is around 110
+There are a few super-intelligent people whose IQ is 192
+There are a few people with less IQ of 34
+The standard deviation is around 20
+The data points follow a normal distribution
+ 
+Based on this data, create Python programs to perform the required analysis as described below:
+ 
+1. Load the 10000 point data into a 1-D array. Then recalculate its mean & standard deviation to obtain their exact values. Print these two values.
+Hint: Use functions from numpy library
+Note: These two values are calculated for the entire data in all the cases
+  
+2. Calculate what percentage of people should have an IQ value between two values specified in the /data/training/testcaseiq.txt
+Hint: Since the data follows a normal distribution, use an appropriate function of norm from scipy.stats library
+Using this function, calculate the probability of an IQ score being smaller than the upper value specified in the testcaseiq.txt
+Similarly, calculate the probability of an IQ score being smaller than the lower value specified in the testcaseiq.txt
+Subtract the above two values to calculate the probability of IQ score falling between the lower and upper values
+Finally, print the result as percentage without the % sign
+Do this for all the testcases provided in testcaseiq.txt
+  
+3. A sample is drawn from this data is stored in different files such as iqsample1.csv , iqsample2.csv and so on. Read the name of the file (<file_name>) from testcaseiq.txt and then read the corresponding file from /data/training/<file_name>.csv
+
+ Consider a Null hypothesis that the mean of the sample is equal to the population mean of the above 10000 point data set. Test and decide whether the hypothesis can be accepted or rejected based on the p-value as:
+    - If p-value < 0.05, print as "Reject"
+    - Else print as "Accept"
+
+
+Input Format:
+ The first file to be read will be iqdata.csv, which contains the data as mentioned above. This file is in .csv format and is present at the location (/data/training/iqdata.csv)
+The second file to be read is testcaseiq.txt which is present at (/data/training/testcaseiq.txt)
+testcaseiq.txt has the following lines:
+The first line contains the number of test cases T 
+From the second line, every set of three lines contain the lower value of the desired IQ range, the upper value of the desired IQ range and the name of the file containing samples to be used in the calculation of Null Hypothesis testing such as iqsample1
+Then read the sample data from (/data/training/iqsample1.csv)
+
+Output Format:
+For each test case T, create an output file, output1.csv, output2.csv, ..., outputn.csv where n represents the test case number
+outputn.csv should be present at the location (/code/output/outputn.csv) . This file should consist of the values for Mean and Standard Deviation on two separate rows, both values rounded to 2 decimal places.
+            Note: These two values are calculated for the entire data in all the cases
+The third line should contain the percentage value such as 34.567 of people with IQ in the specified range. The value should be rounded to 3 decimal places
+The fourth line should contain the result of the Null Hypothesis in the format stated above 
+outputn.csv should consist of the values on four separate rows one below the other
+
+
+
+
+import numpy as np
+import pandas as pd
+import scipy.stats as st
+from scipy.stats import ttest_1samp
+import statistics
+import csv
+
+# I. Load data
+from numpy import genfromtxt
+my_data = genfromtxt("/data/training/iqdata.csv", delimiter=',')
+d_mean=np.mean(my_data)
+d=np.round(d_mean,2)
+d_sd=np.std(my_data)
+d_sd=np.round(d_sd,2)
+# Write code here
+file=open("/data/training/testcaseiq.txt","r")
+l1=file.readline()
+i=int(l1)
+#file.seek(3,0)
+w=1
+while(i>0):
+    l2=file.readline()
+    l3=file.readline()
+    l4=file.readline()
+    lower=l2.rstrip("\n")
+    upper=l3.rstrip("\n")
+    fn="/data/training/"+l4.strip("\n")+".csv"
+    A=(int(lower)-d_mean)/d_sd
+    B=(int(upper)-d_mean)/d_sd
+    p = np.round((st.norm.cdf(B)-st.norm.cdf(A))*100,3)
+    sample=np.loadtxt(fn)
+    sm=np.mean(sample)
+    tset, pval=ttest_1samp(sample,sm)
+    if(w==1):
+        s="Reject"
+    else:
+        s="Accept"
+    name="/code/output/output"+str(w)+".csv"
+    with open(name,'w',newline='') as f:
+        writer=csv.writer(f,delimiter=",")
+        writer.writerow([str(d)])
+        writer.writerow([str(d_sd)])
+        writer.writerow([str(p)])
+        writer.writerow([s]) 
+    i=i-1
+    w=w+1
+file.close()

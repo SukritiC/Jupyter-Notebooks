@@ -1,0 +1,71 @@
+import pandas as pd
+import numpy as np 
+import seaborn as sns
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_score
+from sklearn.svm import SVC
+
+train=pd.read_csv('/data/training/Pacific_train.csv')
+test=pd.read_csv('/data/test/Pacific_test.csv')
+x_train = train[['Maximum Wind','Minimum Pressure','Low Wind NE']]
+x_test = train[['Maximum Wind','Minimum Pressure','Low Wind NE']]
+y_train = train[['Status']]
+y_test = train[['Status']]
+
+dt = DecisionTreeClassifier()
+dt.fit(x_train, y_train)
+y_pred1 = dt.predict(x_test)
+score1 = cross_val_score(dt, x_train, y_train, cv=10, scoring='neg_mean_squared_error')
+
+rc = RandomForestClassifier()
+rc.fit(x_train, y_train)
+y_pred2 = rc.predict(x_test)
+score2 = cross_val_score(rc, X_train, y_train, cv=10, scoring='neg_mean_squared_error')
+
+gb = GaussianNB()
+gb.fit(X_train,y_train)
+y_pred3 = gb.predict(x_test)
+score3 = cross_val_score(gb, X_train, y_train, cv=10, scoring='neg_mean_squared_error')
+
+sv = SVC(kernel='linear')
+sv.fit(x_train,y_train)
+y_pred4 = sv.predict(x_test)
+score4 = cross_val_score(sv, X_train, y_train, cv=10, scoring='neg_mean_squared_error')
+
+def precision(label, confusion_matrix):
+    col = confusion_matrix[:, label]
+    return confusion_matrix[label, label] / col.sum()
+def recall(label, confusion_matrix):
+    col = confusion_matrix[: 1]
+    return confusion_matrix[label, label] / col.sum()
+def accuracy(confusion_matrix):
+    col = confusion_matrix[label, label]
+    c1 = confusion_matrix[1:2]
+    c1 = c1[label]
+    return (c1 + col) / confusion_matrix.sum()
+    
+
+val1 = accuracy(confusion_matrix)
+val2 = accuracy(confusion_matrix)
+val3 = accuracy(confusion_matrix)
+val4 = accuracy(confusion_matrix)
+list1 = [val1, val2, val3, val4]
+val = max(list1)
+
+if val == val1:
+  result = ['DecisionTree', val]
+if val == val2:
+  result = ['RandomForest', val]
+if val == val3:
+  result = ['GaussianNB', val]
+if val == val4:
+  result = ['SVM', val] 
+
+
+result=pd.DataFrame(result)
+#writing output to output.csv
+result.to_csv('/code/output/output.csv', header=False, index=False)
+
